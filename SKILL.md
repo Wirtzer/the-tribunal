@@ -1,6 +1,6 @@
 ---
 name: persona-review
-description: "Persona-based review panels for proposals, PRs, architecture decisions, product specs, budgets, go/no-go decisions, and any document that benefits from multi-stakeholder feedback. Use when the user asks for a 'review', 'panel review', 'persona review', 'red team', 'stress test this', 'what would [role] think', 'get feedback from the team', 'devil's advocate', or presents a document/proposal for critique. Also triggered by: reviewing architecture, evaluating a business case, assessing launch readiness, or any go/no-go decision."
+description: "The Tribunal — lean persona-based review panels for proposals, PRs, architecture decisions, product specs, budgets, go/no-go decisions, and any document that benefits from multi-stakeholder feedback. Use when the user asks for a 'review', 'panel review', 'persona review', 'tribunal', 'red team', 'stress test this', 'what would [role] think', 'get feedback from the team', 'devil's advocate', or presents a document/proposal for critique. Also triggered by: reviewing architecture, evaluating a business case, assessing launch readiness, or any go/no-go decision."
 metadata:
   {
     "openclaw":
@@ -12,7 +12,7 @@ metadata:
 
 # Persona Review System
 
-Run multi-stakeholder reviews using 9 deep professional personas that debate each other to surface blind spots, tensions, and risks.
+Run multi-stakeholder reviews using 9 deep professional personas that surface blind spots, tensions, and risks.
 
 ## Quick Start
 
@@ -21,6 +21,7 @@ Run multi-stakeholder reviews using 9 deep professional personas that debate eac
 - **Named panel:** "Get feedback from Nadia, Tom, and Raj"
 - **Full board:** "Full board review of this proposal"
 - **Tension review:** "Where would the team disagree on this?"
+- **Full tribunal:** "Full tribunal on this proposal" (maximum depth, 3-round debate)
 
 ## Persona Index
 
@@ -56,163 +57,9 @@ Before spawning agents, analyze the document and select only the relevant person
 
 **Step 3: Allow override.** The user can add or remove personas from the suggested set.
 
-## Orchestration Protocol — 3-Round Debate
-
-### Round 1: Independent Review
-
-Spawn one parallel agent per selected persona. Each agent receives:
-- The full document being reviewed
-- Their persona file (loaded from `personas/[id].md`)
-- These instructions:
-
-```
-You are [Name], [Role]. Read your persona file completely — internalize the mental model, review style, blind spots, and signature questions.
-
-Review the following document entirely in character:
-1. Lead with your First Question
-2. Apply your signature questions — ask every one that's relevant
-3. State your initial verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK / ABSTAIN
-4. List your top 3 concerns in priority order
-5. Acknowledge your blind spots — what might you be missing given your known weaknesses?
-
-Stay in character. Your tone, priorities, and concerns should be unmistakably yours.
-```
-
-### Round 2: Cross-Review Debate
-
-After all Round 1 reviews are collected, spawn a second wave of parallel agents. Each persona receives:
-- Their original review
-- ALL other personas' Round 1 reviews
-- These instructions:
-
-```
-You are [Name], [Role]. You've now seen how every other reviewer assessed this document.
-
-Respond to the other reviews:
-1. Challenge: Where do you disagree with another persona? Be specific — name them, quote their concern, and explain why you see it differently.
-2. Concede: Where did another persona raise something you missed? Acknowledge it honestly.
-3. Escalate: Did reading the other reviews surface a NEW concern you didn't see in Round 1?
-4. Update your verdict if the debate changed your assessment.
-
-This is a real debate. Don't be polite for the sake of it. Defend your position where you believe you're right, and concede where the evidence compels you.
-```
-
-### Round 3: Final Verdicts
-
-Spawn a final wave. Each persona receives the Round 2 debate and produces:
-- **Final verdict:** APPROVE / CONDITIONALLY APPROVE / BLOCK
-- **Position change:** Did the debate change your verdict? If yes, explain what convinced you.
-- **Conditions:** If conditionally approving, what must be true before you'd fully approve?
-- **Non-negotiable:** The one thing that absolutely must be addressed regardless of verdict.
-
-### Synthesis
-
-After Round 3, the orchestrator (you, not a persona) produces:
-
-```
-## Panel Review Synthesis
-
-### Document: [title]
-### Panel: [list of personas and names]
-### Context: [POC/MVP/Production/Bug Fix/Refactor]
-
-### Verdict Summary
-| Persona | R1 Verdict | R3 Final Verdict | Changed? |
-|---------|-----------|------------------|----------|
-| ... | ... | ... | ... |
-
-### Consensus Points
-[Things all personas agreed on]
-
-### Key Tensions
-[Specific disagreements that persisted through the debate, with both sides' reasoning]
-
-### Unresolved Risks
-[Concerns that were raised but not fully addressed]
-
-### Conditions for Approval
-[Aggregate list of conditions from all CONDITIONALLY APPROVE verdicts]
-
-### Composite Recommendation
-[Your synthesis: should this proceed, with what modifications?]
-```
-
-## Platform-Specific Implementation
-
-### OpenClaw (sessions_spawn)
-
-Use `sessions_spawn` for each round:
-```
-Round 1: Spawn N agents in parallel, each with persona + document
-Round 2: After all Round 1 announce, spawn N agents with all reviews
-Round 3: After Round 2, spawn final wave for verdicts
-```
-
-Each sub-agent announces back to the session. The orchestrator reads all announcements before proceeding to the next round.
-
-### Claude Code (Agent tool)
-
-Use the Agent tool with `subagent_type: "general-purpose"`:
-```
-Round 1: Launch N parallel Agent calls, each with persona + document
-Round 2: Collect Round 1 results, launch N parallel agents with all reviews
-Round 3: Collect Round 2 results, launch final parallel agents
-```
-
-### Sequential Fallback (no parallelism)
-
-If neither parallel mechanism is available, run the review in a single context:
-1. For each selected persona, read their file and write their Round 1 review in character
-2. After all Round 1 reviews, revisit each persona with the full set of reviews (Round 2 debate)
-3. Write final verdicts for each persona (Round 3)
-4. Produce synthesis
-
-This is slower but still enables the debate dynamic.
-
-## Review Output Format (Per Persona, Per Round)
-
-### Round 1 Template
-```
-## [Name] — [Role]
-**First Question:** [Their signature opening question applied to this document]
-
-**Assessment:**
-[2-4 paragraphs of in-character review]
-
-**Signature Questions Applied:**
-- [Question]: [Finding]
-- [Question]: [Finding]
-...
-
-**Initial Verdict:** [APPROVE / CONDITIONALLY APPROVE / BLOCK / ABSTAIN]
-
-**Top 3 Concerns:**
-1. [Most critical]
-2. [Second]
-3. [Third]
-
-**Blind Spot Acknowledgment:** [What they might be missing]
-```
-
-### Round 2 Template
-```
-## [Name] — Round 2 Response
-
-**Challenges:**
-- Re: [Other Persona]'s point about [X]: [disagreement and reasoning]
-
-**Concessions:**
-- [Other Persona] raised [Y] which I missed because [blind spot reason]
-
-**New Concerns:**
-- After reading [Persona]'s review, I now also worry about [Z]
-
-**Updated Verdict:** [same or changed, with explanation]
-```
-
 ## Context Awareness
 
-Before starting the review, identify the context and tell each persona:
+Before starting the review, identify the context and communicate it to each agent.
 
 | Context | Signal | Persona Adjustment |
 |---------|--------|-------------------|
@@ -222,7 +69,132 @@ Before starting the review, identify the context and tell each persona:
 | Bug Fix | Fixing existing issue | Focus on root cause, regression risk, blast radius |
 | Refactor | Restructuring without behavior change | Focus on before/after equivalence, operational impact |
 
-Include context in every agent prompt: "This is a [CONTEXT] review. Adjust your standards accordingly per your Context Awareness section."
+## The Lean Tribunal — Orchestration Protocol
+
+The default review mode. Token-efficient: the orchestrator loads `personas/index.md` (~900 words of compact summaries) instead of full persona files (~2,200 tokens each).
+
+Full persona files (`personas/[id].md`) are only loaded on demand when deeper context is needed for a specific angle.
+
+### Phase 1: Scan (orchestrator only, no agents)
+
+1. Load `personas/index.md`
+2. Read the document under review
+3. Identify which personas are relevant (use the routing table as a starting point, but reason about the specific content)
+4. Identify which specific concerns from each persona apply to THIS document
+5. Identify where tensions exist between selected personas on THIS document
+6. Tell the user:
+   - Which personas were selected and why
+   - What tensions to expect between them
+   - Allow override (add/remove personas before proceeding)
+
+### Phase 2: Targeted Review (parallel agents)
+
+Spawn 1 agent per selected persona. Each agent receives ONLY:
+- The document under review
+- Their specific section from `personas/index.md` (not the full persona file)
+- 2-4 targeted review questions extracted by the orchestrator from that persona's concerns and signature questions, tailored to THIS document
+- The context level (POC/MVP/Production/Bug Fix/Refactor)
+
+Agent prompt template:
+
+```
+You are [Name], [Role].
+
+Your lens: [lens from index]
+Your first question: [first question from index]
+
+Review the following document with these specific focus areas:
+[2-4 targeted questions the orchestrator extracted]
+
+Context: This is a [CONTEXT] review.
+
+Produce:
+1. Your first question applied to this document
+2. Findings for each focus area (2-3 sentences each)
+3. Verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK
+4. Top concerns (max 3)
+5. What you might be missing (per your blind spots: [blind spots from index])
+```
+
+### Phase 3: Tension (conditional — only if real conflicts exist)
+
+The orchestrator reads all Phase 2 reviews. Two paths:
+
+**If personas disagree on something substantive:** spawn a focused debate.
+- Only between the personas that actually disagree
+- Only on the specific point of disagreement
+- Each debater gets: the contested point, both positions, and instructions to argue their case in 2-3 sentences
+
+**If no real tensions:** skip straight to Phase 4.
+
+### Phase 4: Verdict
+
+The orchestrator synthesizes all reviews (and any debate) into:
+
+```
+## Tribunal Review
+
+### Document: [title]
+### Panel: [personas]
+### Context: [POC/MVP/Production/Bug Fix/Refactor]
+
+### Verdict Summary
+| Persona | Verdict | Key Concern |
+|---------|---------|-------------|
+
+### Consensus
+[What all reviewers agreed on]
+
+### Tensions
+[Disagreements with both sides — only if Phase 3 ran]
+
+### Conditions for Approval
+[From all CONDITIONALLY APPROVE verdicts]
+
+### Recommendation
+[Proceed / Proceed with conditions / Do not proceed — with reasoning]
+```
+
+## Full Tribunal Mode (opt-in)
+
+For high-stakes decisions where maximum depth justifies the extra token cost, users can request `--full` or say "full tribunal."
+
+This runs the original 3-round debate:
+
+1. **Round 1 — Independent Review:** Each agent loads their full persona file (`personas/[id].md`), reviews the document entirely in character, applies all signature questions, states a verdict, and acknowledges blind spots.
+2. **Round 2 — Cross-Review Debate:** Each agent receives all Round 1 reviews and responds: challenge disagreements by name, concede missed points, escalate new concerns surfaced by reading others, update verdict if warranted.
+3. **Round 3 — Final Verdicts:** Each agent produces a final verdict, notes any position change and what caused it, lists conditions for approval, and names their one non-negotiable.
+4. **Synthesis:** The orchestrator produces a composite report with per-persona verdict tracking (R1 vs R3), consensus points, persistent tensions, unresolved risks, aggregate conditions, and a composite recommendation.
+
+Use full tribunal for: production launches, irreversible architecture decisions, large budget approvals, security-sensitive changes.
+
+## Single Persona Mode
+
+When the user asks for a single persona's perspective, load the full persona file (`personas/[id].md`) for that one persona and review entirely in character. No orchestration overhead needed.
+
+## Platform-Specific Implementation
+
+### OpenClaw (sessions_spawn)
+
+- **Phase 2:** Use `sessions_spawn` to launch N agents in parallel, each with their persona slice from `index.md` + targeted questions + the document.
+- **Phase 3 (if needed):** Use `sessions_spawn` for the focused debate between disagreeing personas only.
+- **Full Tribunal:** Use `sessions_spawn` for each of the 3 rounds. Each sub-agent announces back to the session. The orchestrator reads all announcements before proceeding to the next round.
+
+### Claude Code (Agent tool)
+
+- **Phase 2:** Launch N parallel Agent calls (`subagent_type: "general-purpose"`), each with their persona slice + targeted questions + the document.
+- **Phase 3 (if needed):** Launch parallel Agent calls for the debating personas only.
+- **Full Tribunal:** Launch N parallel Agent calls per round, collecting results between rounds.
+
+### Sequential Fallback (no parallelism)
+
+If neither parallel mechanism is available, the orchestrator does everything in one context:
+1. Run Phase 1 scan inline
+2. For each selected persona, write their targeted review in character using their `index.md` section
+3. After all reviews, check for tensions and resolve them inline
+4. Produce the final verdict synthesis
+
+This is slower but still delivers multi-perspective coverage in a single pass.
 
 ## When to Suggest a Review
 

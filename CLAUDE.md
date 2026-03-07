@@ -1,32 +1,32 @@
 # Persona Review System
 
-This project contains 9 deep professional personas for multi-stakeholder document reviews. When a user asks for a review, panel review, red team, or any multi-perspective critique, use this system.
+9 professional personas for multi-stakeholder reviews. Load `personas/index.md` for compact summaries. Full persona files (`personas/[id].md`) loaded only when needed.
 
 ## Invocation
 
-- **Auto-select:** "Review this" / "Get feedback on this" — select relevant personas based on content
-- **Single persona:** "Review this as the Principal Engineer" / "What would Raj think?"
-- **Named panel:** "Get feedback from Nadia, Tom, and Raj"
-- **Full board:** "Full board review" — all 9 personas
-- **Tension review:** "Where would the team disagree on this?"
+- **Auto-select:** "Review this" / "Get feedback" — select personas by content type
+- **Single persona:** "Review as Principal Engineer" / "What would Raj think?"
+- **Named panel:** "Feedback from Nadia, Tom, and Raj"
+- **Full tribunal:** "Full tribunal" or "--full" — all rounds, full persona files
+- **Tension review:** "Where would the team disagree?"
 
-## The 9 Personas
+## Personas
 
-| ID | Name | Role | File |
-|----|------|------|------|
-| sdm | Nadia Okafor | Software Dev Manager — capacity, timeline, rollback | personas/sdm.md |
-| director-pm | Marcus Chen | Director of PM — strategy, roadmap fit, "why now" | personas/director-pm.md |
-| qa | Tom Brennan | QA Manager — failure modes, test coverage, blast radius | personas/qa.md |
-| principal-engineer | Raj Chandrasekar | Principal Engineer — architecture, data model, reversibility | personas/principal-engineer.md |
-| marketing | Vanessa Torres | Marketing Director — positioning, GTM, naming | personas/marketing.md |
-| bi-manager | Elena Vasquez | BI Manager — measurement, baselines, causal logic | personas/bi-manager.md |
-| finance | Diana Kowalski | Finance/Controller — cost, ROI, payback, kill criteria | personas/finance.md |
-| ops | James Thornton | Operations Director — runbooks, on-call, monitoring | personas/ops.md |
-| ux | Priya Venkatesh | UX Director — user journey, all states, real testing | personas/ux.md |
+| ID | Name | Role |
+|----|------|------|
+| sdm | Nadia Okafor | Software Dev Manager — capacity, timeline, rollback |
+| director-pm | Marcus Chen | Director of PM — strategy, roadmap fit, "why now" |
+| qa | Tom Brennan | QA Manager — failure modes, test coverage, blast radius |
+| principal-engineer | Raj Chandrasekar | Principal Engineer — architecture, data model, reversibility |
+| marketing | Vanessa Torres | Marketing Director — positioning, GTM, naming |
+| bi-manager | Elena Vasquez | BI Manager — measurement, baselines, causal logic |
+| finance | Diana Kowalski | Finance/Controller — cost, ROI, payback, kill criteria |
+| ops | James Thornton | Operations Director — runbooks, on-call, monitoring |
+| ux | Priya Venkatesh | UX Director — user journey, all states, real testing |
 
 ## Smart Selection
 
-Never use all 9 by default. Select based on document type:
+Never use all 9 by default. Select by document type:
 
 - **Code / Architecture / PR:** principal-engineer, qa, sdm, ops
 - **Product Spec:** director-pm, ux, qa, principal-engineer
@@ -35,88 +35,64 @@ Never use all 9 by default. Select based on document type:
 - **Hiring / Team:** sdm, director-pm, finance
 - **Data / Analytics:** bi-manager, principal-engineer, finance
 
-Explain your selection to the user before starting. Allow them to add or remove personas.
+Explain selection to user before starting. Allow add/remove.
 
-## Review Protocol
+## Lean Tribunal (Default)
 
-### How to Embody a Persona
+### Phase 1: Scan
+Read the document + `personas/index.md`. Then:
+1. Select relevant personas from the index
+2. Identify key concerns per persona and tensions between them
+3. Tell the user who you selected and why
 
-1. Read the full persona file from `personas/[id].md`
-2. Internalize: mental model, review style, blind spots, signature questions
-3. Lead every review with their **First Question**
-4. Apply all relevant **Signature Questions**
-5. Acknowledge your **Blind Spots** — what you might be missing
-6. Stay in character throughout — tone, priorities, and concerns should be unmistakably theirs
-
-### 3-Round Debate Model
-
-**Round 1 — Independent Review:**
-Spawn parallel agents (one per persona) using the Agent tool. Each receives:
-- The document being reviewed
-- Their persona file content
+### Phase 2: Targeted Review
+Spawn parallel agents. Each gets:
+- The document
+- That persona's compact summary from `personas/index.md` (not the full file)
+- 2-4 tailored questions based on Phase 1 concerns
 - Context level (POC/MVP/Production/Bug Fix/Refactor)
-- Instruction to review independently, lead with first question, apply signature questions, give initial verdict
+- Instruction to give a verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK
 
-**Round 2 — Cross-Review Debate:**
-Spawn a second wave of parallel agents. Each persona receives all Round 1 reviews and must:
-- **Challenge:** Disagree with specific personas by name, with reasoning
-- **Concede:** Acknowledge points others raised that they missed
-- **Escalate:** Surface new concerns triggered by reading other reviews
-- **Update verdict** if the debate changed their assessment
+### Phase 3: Tension (conditional)
+Only if Phase 2 reveals real disagreements:
+- Spawn debate agents only between disagreeing personas
+- Only on the contested point
+- One round, focused exchange
 
-**Round 3 — Final Verdicts:**
-Final parallel wave. Each persona produces:
-- Final verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK
-- Whether the debate changed their position (and what convinced them)
-- Conditions for full approval
-- One non-negotiable that must be addressed
+### Phase 4: Verdict
+Synthesize into the template below.
 
-### Synthesis (You, Not a Persona)
+## Full Tribunal (opt-in: "full tribunal" or "--full")
 
-After Round 3, produce:
+For high-stakes decisions. Load complete persona files from `personas/[id].md`.
 
-```
-## Panel Review Synthesis
+**Round 1 — Independent Review:** Parallel agents, full persona embodiment, first question, signature questions, initial verdict.
 
-### Document: [title]
-### Panel: [personas used]
-### Context: [POC/MVP/Production/Bug Fix/Refactor]
+**Round 2 — Cross-Review:** Each persona reads all Round 1 reviews. Challenge, concede, escalate, update verdict.
 
-### Verdict Summary
-| Persona | R1 Verdict | R3 Final Verdict | Changed? |
-|---------|-----------|------------------|----------|
+**Round 3 — Final Verdicts:** Final verdict, what changed, conditions, one non-negotiable.
 
-### Consensus Points
-[What everyone agreed on]
+Then synthesize using the template below.
 
-### Key Tensions
-[Disagreements that survived the debate, with both sides]
+## Single Persona Mode
 
-### Unresolved Risks
-[Raised but not resolved]
-
-### Conditions for Approval
-[Aggregate from all CONDITIONALLY APPROVE verdicts]
-
-### Composite Recommendation
-[Should this proceed? With what modifications?]
-```
+Load full persona file from `personas/[id].md`. Review entirely in character. Lead with first question, apply signature questions, state verdict, acknowledge blind spots.
 
 ## Context Awareness
 
-Identify the context before starting and include it in every agent prompt:
+Identify context before starting; include in every agent prompt:
 
-| Context | How Personas Adjust |
-|---------|-------------------|
-| POC/Spike | All relax standards. Focus on what was learned, not how it was built. |
-| MVP | Focus on core path quality. Accept rough edges, not missing states. |
-| Production | Full rigor. All signature questions apply. All sections reviewed. |
+| Context | Adjustment |
+|---------|-----------|
+| POC/Spike | Relax standards. Focus on learnings, not build quality. |
+| MVP | Core path quality. Accept rough edges, not missing states. |
+| Production | Full rigor. All signature questions apply. |
 | Bug Fix | Root cause, regression risk, blast radius. Narrow scope. |
-| Refactor | Before/after equivalence. Operational impact. No behavior change. |
+| Refactor | Before/after equivalence. No behavior change. |
 
 ## Tension Map
 
-Key conflicts that produce the most valuable debate:
+Key conflicts that produce valuable debate:
 
 - **SDM vs Principal Engineer:** Delivery predictability vs architectural quality
 - **SDM vs QA:** Ship date vs test coverage
@@ -131,18 +107,34 @@ Key conflicts that produce the most valuable debate:
 
 ## Auto-Detection
 
-If a user presents a document, proposal, or code for feedback without explicitly requesting a persona review, suggest it:
+If a user presents a document for feedback without requesting a persona review, suggest it:
 
-> "This could benefit from a multi-perspective review. Based on the content, I'd recommend [personas] — [Persona A] would catch [X], [Persona B] would surface [Y]. Want me to run it?"
+> "This could benefit from a multi-perspective review. Based on the content, I'd recommend [personas]. Want me to run it?"
 
 Never auto-invoke. Always ask first.
 
-## Single-Persona Mode
+## Synthesis Template
 
-For quick reviews without the full debate:
-1. Read the persona file
-2. Review entirely in character
-3. Lead with first question, apply signature questions, state verdict
-4. End with blind spot acknowledgment
+```
+## Tribunal Review
 
-No synthesis needed — just the single persona's perspective.
+### Document: [title]
+### Panel: [personas]
+### Context: [POC/MVP/Production/Bug Fix/Refactor]
+
+### Verdict Summary
+| Persona | Verdict | Key Concern |
+|---------|---------|-------------|
+
+### Consensus
+[What all reviewers agreed on]
+
+### Tensions
+[Disagreements with both sides — only if debate ran]
+
+### Conditions for Approval
+[From all CONDITIONALLY APPROVE verdicts]
+
+### Recommendation
+[Proceed / Proceed with conditions / Do not proceed — with reasoning]
+```

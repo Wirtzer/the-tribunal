@@ -1,6 +1,6 @@
-# Persona Review System
+# The Tribunal
 
-A deep persona-based review system that brings 9 distinct professional perspectives to any document, proposal, PR, or architecture decision. Works in both [OpenClaw](https://github.com/nickclaw/openclaw) and Claude Code.
+9 expert personas that debate your proposals, code, and decisions from every angle. A token-efficient review system for Claude Code and OpenClaw.
 
 ## Personas
 
@@ -18,68 +18,78 @@ A deep persona-based review system that brings 9 distinct professional perspecti
 
 ## How It Works
 
-The system selects relevant personas based on what you're reviewing, spawns parallel agents (one per persona), and runs a 3-round debate:
+Two modes, same personas:
 
-1. **Round 1 - Independent Review:** Each persona reviews the document through their unique lens
-2. **Round 2 - Cross-Review Debate:** Personas see each other's reviews and respond — challenging, agreeing, raising new concerns
-3. **Round 3 - Final Verdicts:** Each persona gives their verdict, noting if the debate changed their position
-4. **Synthesis:** Combined summary with consensus points, unresolved tensions, and a composite recommendation
+### Lean Tribunal (default)
+The orchestrator loads a compact persona index (~900 words total) and dispatches targeted review questions to parallel agents. Debates only spawn when real disagreements exist. ~15-25K tokens for a full review.
+
+1. **Scan** — orchestrator selects personas and identifies concerns from the index
+2. **Targeted Review** — parallel agents each get a compact persona summary + 2-4 tailored questions
+3. **Tension** — focused debate only between disagreeing personas, only on contested points
+4. **Verdict** — synthesis with consensus, tensions, conditions, and recommendation
+
+### Full Tribunal (opt-in)
+For high-stakes decisions. Loads complete persona files and runs a 3-round debate. ~100K+ tokens.
+
+1. **Independent Review** — each persona reviews in full character with all signature questions
+2. **Cross-Review Debate** — personas challenge, concede, and escalate after seeing each other's reviews
+3. **Final Verdicts** — each persona gives their verdict, noting if the debate changed their position
+4. **Synthesis** — consensus, persistent tensions, unresolved risks, composite recommendation
 
 ## Quick Start
 
 ### Claude Code
-Copy or symlink this directory, then in any project:
-- `"Review this architecture doc"` - auto-selects relevant personas
-- `"Run a persona review with Raj and Tom"` - specific personas
-- `"Full board review"` - all 9 personas
+Copy or symlink this directory, then:
+- `"Review this architecture doc"` — auto-selects relevant personas (lean mode)
+- `"Run a review with Raj and Tom"` — specific personas
+- `"Full tribunal on this proposal"` — maximum depth, 3-round debate
 
 ### OpenClaw
-Install as a skill:
 ```bash
 ./install.sh
 ```
-Then invoke via `/persona-review` or let the system auto-detect when a review is appropriate.
+Then `/persona-review` or let the system auto-detect.
 
 ## Tension Map
 
-These are the key conflicts that make the debate productive. Each persona has a worldview that systematically conflicts with others.
+The key conflicts that make reviews productive.
 
 ### Speed vs Quality
 | Tension | Why |
 |---------|-----|
-| **SDM vs Principal Engineer** | Nadia needs predictable delivery; Raj needs architectural integrity. She sees his reviews as scope creep; he sees her timelines as technical debt factories. |
-| **SDM vs QA** | Nadia wants to hit sprint commitments; Tom wants comprehensive test coverage. She measures quality in ship dates; he measures it in confidence levels. |
-| **Director PM vs QA** | Marcus pushes faster iteration cycles; Tom says you can iterate fast or safely, not both. Marcus sees Tom as a bottleneck; Tom sees Marcus as someone who's never explained a data breach to customers. |
+| **SDM vs Principal Engineer** | Nadia needs predictable delivery; Raj needs architectural integrity. |
+| **SDM vs QA** | Nadia wants to hit sprint commitments; Tom wants comprehensive test coverage. |
+| **Director PM vs QA** | Marcus pushes faster cycles; Tom says you can iterate fast or safely, not both. |
 
 ### Innovation vs Stability
 | Tension | Why |
 |---------|-----|
-| **Director PM vs Ops** | Marcus ships features fast; James wants operational readiness before launch. Marcus is excited about launch day; James worries about day 31. |
-| **Principal Engineer vs Ops** | Raj proposes novel architectures; James asks who on the on-call rotation can debug them. Raj designs systems; James keeps them alive. |
-| **UX vs Ops** | Priya designs rich, personalized experiences; James has to maintain the infrastructure. Every custom UI state is another thing to cache, invalidate, and debug. |
+| **Director PM vs Ops** | Marcus ships fast; James wants operational readiness before launch. |
+| **Principal Engineer vs Ops** | Raj proposes novel architectures; James asks who debugs them at 2 AM. |
+| **UX vs Ops** | Priya designs rich experiences; James has to keep the infrastructure running. |
 
 ### Revenue vs Cost
 | Tension | Why |
 |---------|-----|
-| **Director PM vs Finance** | Marcus builds business cases with conviction; Diana stress-tests them with skepticism. He's incentivized to launch; she's incentivized to make sure investments return. |
-| **Marketing vs Finance** | Vanessa wants brand budget with fuzzy attribution; Diana wants every dollar measurable. Vanessa says brand is a moat; Diana says show her the moat in the P&L. |
-| **SDM vs Finance** | Nadia asks for headcount; Diana asks for more output per head. They agree on data but interpret it differently. |
+| **Director PM vs Finance** | Marcus builds cases with conviction; Diana stress-tests with skepticism. |
+| **Marketing vs Finance** | Vanessa wants brand budget; Diana wants every dollar measurable. |
+| **SDM vs Finance** | Nadia asks for headcount; Diana asks for more output per head. |
 
 ### Data vs Intuition
 | Tension | Why |
 |---------|-----|
-| **BI Manager vs Director PM** | Elena wants data-backed decisions; Marcus sometimes moves on strategic intuition. She says "then you're guessing"; he says "waiting for data means missing the window." |
-| **BI Manager vs Marketing** | Elena wants statistical evidence; Vanessa operates on qualitative signal. Elena says "12 customers is a dinner party, not a sample size." |
+| **BI Manager vs Director PM** | Elena wants data; Marcus sometimes moves on strategic intuition. |
+| **BI Manager vs Marketing** | Elena wants statistical evidence; Vanessa operates on qualitative signal. |
 
 ### User Experience vs Technical Reality
 | Tension | Why |
 |---------|-----|
-| **UX vs Principal Engineer** | Priya designs for user mental models; Raj designs for system boundaries. She wants one API call per screen; he wants clean service decomposition. |
-| **UX vs SDM** | Priya wants more time for research and iteration; Nadia needs locked scope for sprint planning. They agree on quality, disagree on when "good enough" arrives. |
+| **UX vs Principal Engineer** | Priya designs for user mental models; Raj designs for system boundaries. |
+| **UX vs SDM** | Priya wants more research time; Nadia needs locked scope for sprint planning. |
 
 ## Smart Selection
 
-Not every review needs all 9 personas. The system selects based on content:
+Not every review needs all 9. The system selects based on content:
 
 | Document Type | Recommended Personas |
 |--------------|---------------------|
@@ -94,7 +104,6 @@ Not every review needs all 9 personas. The system selects based on content:
 ## Installation
 
 ```bash
-# Symlink into both OpenClaw and Claude Code skill directories
 ./install.sh
 ```
 
