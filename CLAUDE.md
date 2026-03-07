@@ -1,6 +1,6 @@
-# Persona Review System
+# The Tribunal
 
-9 professional personas for multi-stakeholder reviews. Load `personas/index.md` for compact summaries. Full persona files (`personas/[id].md`) loaded only when needed.
+9 expert personas for multi-stakeholder reviews. Each persona has deep professional expertise, distinct mental models, and frameworks that elevate their analysis beyond surface-level feedback.
 
 ## Invocation
 
@@ -37,40 +37,33 @@ Never use all 9 by default. Select by document type:
 
 Explain selection to user before starting. Allow add/remove.
 
-## Lean Tribunal (Default)
+## Review Protocol (Default)
 
 ### Phase 1: Scan
-Read the document + `personas/index.md`. Then:
-1. Select relevant personas from the index
-2. Identify key concerns per persona and tensions between them
-3. Tell the user who you selected and why
+Read the document + `personas/index.md`. Select relevant personas, identify concerns and tensions. Tell user who and why. Allow override.
 
-### Phase 2: Targeted Review
-Spawn parallel agents. Each gets:
+### Phase 2: Expert Review
+Spawn parallel agents (Agent tool). Each gets:
 - The document
-- That persona's compact summary from `personas/index.md` (not the full file)
-- 2-4 tailored questions based on Phase 1 concerns
+- Their **full persona file** from `personas/[id].md` — complete mental model, signature questions, deep expertise
 - Context level (POC/MVP/Production/Bug Fix/Refactor)
-- Instruction to give a verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK
+- Instructions: lead with first question, apply all relevant signature questions, draw on "Informed By" expertise, give verdict, acknowledge blind spots
 
 ### Phase 3: Tension (conditional)
 Only if Phase 2 reveals real disagreements:
-- Spawn debate agents only between disagreeing personas
-- Only on the contested point
-- One round, focused exchange
+- Debate agents only between disagreeing personas, only on the contested point
+- Each gets their full persona file + the specific disagreement
 
 ### Phase 4: Verdict
 Synthesize into the template below.
 
 ## Full Tribunal (opt-in: "full tribunal" or "--full")
 
-For high-stakes decisions. Load complete persona files from `personas/[id].md`.
+Adds two more rounds for highest-stakes decisions:
 
-**Round 1 — Independent Review:** Parallel agents, full persona embodiment, first question, signature questions, initial verdict.
-
-**Round 2 — Cross-Review:** Each persona reads all Round 1 reviews. Challenge, concede, escalate, update verdict.
-
-**Round 3 — Final Verdicts:** Final verdict, what changed, conditions, one non-negotiable.
+1. **Expert Review** — same as Phase 2 above
+2. **Cross-Review Debate** — each persona reads all Round 1 reviews, challenges by name, concedes, escalates new concerns, updates verdict
+3. **Final Verdicts** — final verdict, what changed, conditions, one non-negotiable
 
 Then synthesize using the template below.
 

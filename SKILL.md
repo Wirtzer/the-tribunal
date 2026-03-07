@@ -69,11 +69,7 @@ Before starting the review, identify the context and communicate it to each agen
 | Bug Fix | Fixing existing issue | Focus on root cause, regression risk, blast radius |
 | Refactor | Restructuring without behavior change | Focus on before/after equivalence, operational impact |
 
-## The Lean Tribunal — Orchestration Protocol
-
-The default review mode. Token-efficient: the orchestrator loads `personas/index.md` (~900 words of compact summaries) instead of full persona files (~2,200 tokens each).
-
-Full persona files (`personas/[id].md`) are only loaded on demand when deeper context is needed for a specific angle.
+## Orchestration Protocol
 
 ### Phase 1: Scan (orchestrator only, no agents)
 
@@ -87,33 +83,30 @@ Full persona files (`personas/[id].md`) are only loaded on demand when deeper co
    - What tensions to expect between them
    - Allow override (add/remove personas before proceeding)
 
-### Phase 2: Targeted Review (parallel agents)
+### Phase 2: Expert Review (parallel agents)
 
-Spawn 1 agent per selected persona. Each agent receives ONLY:
+Spawn 1 agent per selected persona. Each agent receives:
 - The document under review
-- Their specific section from `personas/index.md` (not the full persona file)
-- 2-4 targeted review questions extracted by the orchestrator from that persona's concerns and signature questions, tailored to THIS document
+- Their **full persona file** from `personas/[id].md` — the complete mental model, review style, signature questions, blind spots, and deep expertise
 - The context level (POC/MVP/Production/Bug Fix/Refactor)
 
 Agent prompt template:
 
 ```
-You are [Name], [Role].
+You are [Name], [Role]. Read your persona file completely — internalize the mental model, review style, blind spots, signature questions, and deep expertise in the "Informed By" section.
 
-Your lens: [lens from index]
-Your first question: [first question from index]
+Review the following document entirely in character:
 
-Review the following document with these specific focus areas:
-[2-4 targeted questions the orchestrator extracted]
+Context: This is a [CONTEXT] review. Adjust your standards per your Context Awareness section.
 
-Context: This is a [CONTEXT] review.
+1. Lead with your First Question applied to this document
+2. Apply your signature questions — ask every one that's relevant
+3. Draw on your deep expertise ("Informed By") where it applies — use these frameworks and principles to elevate your analysis beyond surface-level review
+4. State your verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK
+5. List your top 3 concerns in priority order
+6. Acknowledge your blind spots — what might you be missing given your known weaknesses?
 
-Produce:
-1. Your first question applied to this document
-2. Findings for each focus area (2-3 sentences each)
-3. Verdict: APPROVE / CONDITIONALLY APPROVE / BLOCK
-4. Top concerns (max 3)
-5. What you might be missing (per your blind spots: [blind spots from index])
+Stay in character. Your tone, priorities, and concerns should be unmistakably yours.
 ```
 
 ### Phase 3: Tension (conditional — only if real conflicts exist)
@@ -123,7 +116,7 @@ The orchestrator reads all Phase 2 reviews. Two paths:
 **If personas disagree on something substantive:** spawn a focused debate.
 - Only between the personas that actually disagree
 - Only on the specific point of disagreement
-- Each debater gets: the contested point, both positions, and instructions to argue their case in 2-3 sentences
+- Each debater gets: their full persona file, the contested point, both positions, and instructions to argue their case
 
 **If no real tensions:** skip straight to Phase 4.
 
@@ -157,11 +150,9 @@ The orchestrator synthesizes all reviews (and any debate) into:
 
 ## Full Tribunal Mode (opt-in)
 
-For high-stakes decisions where maximum depth justifies the extra token cost, users can request `--full` or say "full tribunal."
+For the highest-stakes decisions, users can request `--full` or say "full tribunal." This adds two more rounds of debate on top of the standard review:
 
-This runs the original 3-round debate:
-
-1. **Round 1 — Independent Review:** Each agent loads their full persona file (`personas/[id].md`), reviews the document entirely in character, applies all signature questions, states a verdict, and acknowledges blind spots.
+1. **Round 1 — Expert Review:** Same as Phase 2 above — full persona files, full character, all signature questions and deep expertise applied.
 2. **Round 2 — Cross-Review Debate:** Each agent receives all Round 1 reviews and responds: challenge disagreements by name, concede missed points, escalate new concerns surfaced by reading others, update verdict if warranted.
 3. **Round 3 — Final Verdicts:** Each agent produces a final verdict, notes any position change and what caused it, lists conditions for approval, and names their one non-negotiable.
 4. **Synthesis:** The orchestrator produces a composite report with per-persona verdict tracking (R1 vs R3), consensus points, persistent tensions, unresolved risks, aggregate conditions, and a composite recommendation.
@@ -176,13 +167,13 @@ When the user asks for a single persona's perspective, load the full persona fil
 
 ### OpenClaw (sessions_spawn)
 
-- **Phase 2:** Use `sessions_spawn` to launch N agents in parallel, each with their persona slice from `index.md` + targeted questions + the document.
+- **Phase 2:** Use `sessions_spawn` to launch N agents in parallel, each with their full persona file + the document.
 - **Phase 3 (if needed):** Use `sessions_spawn` for the focused debate between disagreeing personas only.
 - **Full Tribunal:** Use `sessions_spawn` for each of the 3 rounds. Each sub-agent announces back to the session. The orchestrator reads all announcements before proceeding to the next round.
 
 ### Claude Code (Agent tool)
 
-- **Phase 2:** Launch N parallel Agent calls (`subagent_type: "general-purpose"`), each with their persona slice + targeted questions + the document.
+- **Phase 2:** Launch N parallel Agent calls (`subagent_type: "general-purpose"`), each with their full persona file + the document.
 - **Phase 3 (if needed):** Launch parallel Agent calls for the debating personas only.
 - **Full Tribunal:** Launch N parallel Agent calls per round, collecting results between rounds.
 
@@ -190,7 +181,7 @@ When the user asks for a single persona's perspective, load the full persona fil
 
 If neither parallel mechanism is available, the orchestrator does everything in one context:
 1. Run Phase 1 scan inline
-2. For each selected persona, write their targeted review in character using their `index.md` section
+2. For each selected persona, read their full persona file and write their review in character
 3. After all reviews, check for tensions and resolve them inline
 4. Produce the final verdict synthesis
 

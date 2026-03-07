@@ -1,6 +1,12 @@
 # The Tribunal
 
-9 expert personas that debate your proposals, code, and decisions from every angle. A token-efficient review system for Claude Code and OpenClaw.
+**Created by [Alex Wirtzer](https://github.com/Wirtzer)**
+
+Every proposal has blind spots. Every architecture has hidden risks. Every business case has optimistic assumptions. The problem isn't that teams lack expertise — it's that no single perspective catches everything, and real cross-functional debate rarely happens before decisions are made.
+
+The Tribunal puts 9 deeply-modeled expert personas — each with distinct professional backgrounds, mental models, blind spots, and signature questions — in a room with your document. They don't just review independently; they challenge each other. The SDM pushes back on the Principal Engineer's timeline. Finance questions the PM's revenue projections. QA asks the question nobody wants to hear. The result is the kind of rigorous, multi-angle stress test that usually only happens after something goes wrong.
+
+Works with Claude Code and OpenClaw. Each persona carries deep expertise drawn from real professional frameworks — not just a job title and a checklist, but the kind of hard-won judgment that comes from years in the role.
 
 ## Personas
 
@@ -18,29 +24,22 @@
 
 ## How It Works
 
-Two modes, same personas:
+### Default Review
+The orchestrator selects relevant personas, then spawns parallel agents — each loaded with their **full persona file** including deep expertise, mental models, and signature questions. If reviewers disagree, a focused debate round resolves the tension. One round of expert-depth review, debates only where they matter.
 
-### Lean Tribunal (default)
-The orchestrator loads a compact persona index (~900 words total) and dispatches targeted review questions to parallel agents. Debates only spawn when real disagreements exist. ~15-25K tokens for a full review.
-
-1. **Scan** — orchestrator selects personas and identifies concerns from the index
-2. **Targeted Review** — parallel agents each get a compact persona summary + 2-4 tailored questions
+1. **Scan** — orchestrator selects personas using the compact index, identifies concerns and tensions
+2. **Expert Review** — parallel agents each get their full persona file and review in character with all their expertise
 3. **Tension** — focused debate only between disagreeing personas, only on contested points
 4. **Verdict** — synthesis with consensus, tensions, conditions, and recommendation
 
 ### Full Tribunal (opt-in)
-For high-stakes decisions. Loads complete persona files and runs a 3-round debate. ~100K+ tokens.
-
-1. **Independent Review** — each persona reviews in full character with all signature questions
-2. **Cross-Review Debate** — personas challenge, concede, and escalate after seeing each other's reviews
-3. **Final Verdicts** — each persona gives their verdict, noting if the debate changed their position
-4. **Synthesis** — consensus, persistent tensions, unresolved risks, composite recommendation
+For the highest-stakes decisions. Adds two more rounds of cross-review debate where personas directly challenge each other, concede points, and issue final verdicts noting what changed their mind.
 
 ## Quick Start
 
 ### Claude Code
 Copy or symlink this directory, then:
-- `"Review this architecture doc"` — auto-selects relevant personas (lean mode)
+- `"Review this architecture doc"` — auto-selects relevant personas
 - `"Run a review with Raj and Tom"` — specific personas
 - `"Full tribunal on this proposal"` — maximum depth, 3-round debate
 
