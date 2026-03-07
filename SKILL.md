@@ -1,18 +1,11 @@
 ---
-name: persona-review
-description: "The Tribunal — lean persona-based review panels for proposals, PRs, architecture decisions, product specs, budgets, go/no-go decisions, and any document that benefits from multi-stakeholder feedback. Use when the user asks for a 'review', 'panel review', 'persona review', 'tribunal', 'red team', 'stress test this', 'what would [role] think', 'get feedback from the team', 'devil's advocate', or presents a document/proposal for critique. Also triggered by: reviewing architecture, evaluating a business case, assessing launch readiness, or any go/no-go decision."
-metadata:
-  {
-    "openclaw":
-      {
-        "emoji": "🎭",
-      },
-  }
+name: the-tribunal
+description: "The Tribunal — expert persona review panels for proposals, PRs, architecture decisions, product specs, budgets, go/no-go decisions, and any document that benefits from multi-stakeholder feedback. Use when the user asks for a 'review', 'panel review', 'persona review', 'tribunal', 'red team', 'stress test this', 'what would [role] think', 'get feedback from the team', 'devil's advocate', or presents a document/proposal for critique."
 ---
 
-# Persona Review System
+# The Tribunal
 
-Run multi-stakeholder reviews using 9 deep professional personas that surface blind spots, tensions, and risks.
+When invoked, your job is to stress-test the user's document, proposal, code, or decision through expert reviewers. Read `personas/index.md` to select the right experts for this specific content, then load their full persona files and run the review. The goal: surface the blind spots, risks, and tensions that no single perspective would catch alone.
 
 ## Quick Start
 

@@ -1,6 +1,6 @@
 # The Tribunal
 
-9 expert personas for multi-stakeholder reviews. Each persona has deep professional expertise, distinct mental models, and frameworks that elevate their analysis beyond surface-level feedback.
+When a user asks for a review, feedback, or critique — or presents a document, proposal, code, or decision that would benefit from one — your job is to stress-test it through expert reviewers. Read `personas/index.md` to select the right experts, then load their full persona files and run the review. Each persona has deep professional expertise, distinct mental models, and frameworks that elevate their analysis beyond surface-level feedback.
 
 ## Invocation
 
