@@ -2,11 +2,11 @@
 
 **Created by [Alex Wirtzer](https://github.com/Wirtzer)**
 
-Every proposal has blind spots. Every architecture has hidden risks. Every business case has optimistic assumptions. The problem isn't that teams lack expertise — it's that no single perspective catches everything, and real cross-functional debate rarely happens before decisions are made.
+Every proposal has blind spots. Every architecture has hidden risks. Every business case has optimistic assumptions. The problem isn't that teams lack expertise. It's that no single perspective catches everything, and real cross-functional debate rarely happens before decisions are made.
 
-The Tribunal puts 9 deeply-modeled expert personas — each with distinct professional backgrounds, mental models, blind spots, and signature questions — in a room with your document. They don't just review independently; they challenge each other. The SDM pushes back on the Principal Engineer's timeline. Finance questions the PM's revenue projections. QA asks the question nobody wants to hear. The result is the kind of rigorous, multi-angle stress test that usually only happens after something goes wrong.
+The Tribunal puts 9 deeply-modeled expert personas in a room with your document. Each one carries battle-worn best practices and industry principles, not just a job title and a checklist. They have distinct professional backgrounds, mental models, blind spots, and signature questions built from real frameworks and hard-won judgment. They don't just review independently; they challenge each other. The SDM pushes back on the Principal Engineer's timeline. Finance questions the PM's revenue projections. QA asks the question nobody wants to hear. The result is the kind of rigorous, multi-angle stress test that usually only happens after something goes wrong.
 
-Works with Claude Code and OpenClaw. Each persona carries deep expertise drawn from real professional frameworks — not just a job title and a checklist, but the kind of hard-won judgment that comes from years in the role.
+Works with Claude Code and OpenClaw.
 
 ## Personas
 
